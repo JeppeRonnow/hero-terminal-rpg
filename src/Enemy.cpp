@@ -6,15 +6,12 @@ Enemy::Enemy(std::string name, int hp, int strength, int xpReward)
 
 // prints stats of the enemy
 void Enemy::printStats() const {
-    std::cout << "Enemy: " << name << "\n"
-              << "HP: " << hp << "\n"
-              << "Strength: " << strength << "\n"
-              << "XP Reward: " << xpReward << "\n";
+    std::cout << name << " with " << hp << " remaining life\n";
 }
 
 // prints name of the enemy
 void Enemy::printName() const {
-    std::cout << "Enemy: " << name << "\n";
+    std::cout << name << "\n";
 }
 
 // is the enemy dead?

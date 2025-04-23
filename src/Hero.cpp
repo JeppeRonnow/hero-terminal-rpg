@@ -7,11 +7,7 @@ Hero::Hero(std::string name, int xp, int level, int hp, int strength)
 
 // prints stats of the hero
 void Hero::printStats() const {
-    std::cout << "Hero: " << name << "\n"
-              << "HP: " << hp << "\n"
-              << "XP: " << xp << "\n"
-              << "Level: " << level << "\n"
-              << "Strength: " << strength << "\n";
+    std::cout << name << " with " << hp << " hp " << level << " level " << xp << " xp\n";
 }
 
 // is the hero dead?

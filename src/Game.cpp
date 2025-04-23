@@ -10,8 +10,9 @@ Game::Game() {
 // run game
 void Game::run() {
     while (isRunning) {
-        mainMenu();
-        if (currentHero)
+        if (!currentHero)
+            mainMenu();
+        else
             adventureMenu();
     }
 }
@@ -74,16 +75,49 @@ void Game::fightMenu() {
 
     Enemy& enemy = enemies[enemyIndex];
 
+    // save start health
+    int startHeroHP = currentHero->getHP();
+    int startEnemyHP = enemy.getHP();
+
     while (!enemy.isDead() && !currentHero->isDead()) {
         enemy.printStats();
+        currentHero->printStats();
+        std::cout << "Press enter to fight";
+        std::cin.ignore();
+        std::cin.get();
+        
+        // Hero attacks enemy
+        enemy.receiveDamage(currentHero->getStrength());
+
+        // Enemy attacks hero
+        if (!enemy.isDead()) {
+            currentHero->receiveDamage(enemy.getStrength());
+        }
+        else {
+            std::cout << enemy.getName() << " is defeated\n";
+        }
     }
 
+
+    if (enemy.isDead()) {
+        currentHero->setHP(startHeroHP); // restore health
+        std::cout << "You won!\n";
+        currentHero->gainXP(enemy.getXPReward()); // gain xp
+        currentHero->levelUpIfReady(); // level up if ready
+    } else {
+        std::cout << "You were defeated by " << enemy.getName() << "\n";
+    }
+
+    enemy.setHP(startEnemyHP); // restore health
+
+    currentHero->printStats();
 }
 
 void Game::displayEnemies() const {
     for (size_t i = 0; i < enemies.size(); ++i) {
         std::cout << i << " : ";
         enemies[i].printName();
+        
     }
 }
 

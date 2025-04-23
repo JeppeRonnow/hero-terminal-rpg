@@ -15,6 +15,16 @@ class Hero {
         void printStats() const;
 
         bool isDead() const;
+
+        // getter functions
+        int getStrength() const { return strength; }
+        std::string getName() const { return name; }
+        int getHP() const { return hp; }
+
+        //setter functions
+        void setHP(int newHP) { hp = newHP; }
+
+        
     
     private:
         std::string name;
