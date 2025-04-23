@@ -1,20 +1,10 @@
 #include <iostream>
 
-#include "../headers/Hero.hpp"
-#include "../headers/Enemy.hpp"
+#include "../headers/Game.hpp"
+#include <iostream>
 
 int main() {
-    
-    std::cout << "Jeppe's Terminal RPG" << std::endl;
-    std::cout << "====================" << std::endl;
-
-    // Create a hero
-    Hero hero("Jeppe");
-    hero.printStats();
-
-    // Create an enemy
-    Enemy Hest("Hest", 4, 1, 100);
-    Hest.printStats();
-
+    Game game;
+    game.run();
     return 0;
 }

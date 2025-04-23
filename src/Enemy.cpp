@@ -12,6 +12,11 @@ void Enemy::printStats() const {
               << "XP Reward: " << xpReward << "\n";
 }
 
+// prints name of the enemy
+void Enemy::printName() const {
+    std::cout << "Enemy: " << name << "\n";
+}
+
 // is the enemy dead?
 bool Enemy::isDead() const {
     return hp <= 0;

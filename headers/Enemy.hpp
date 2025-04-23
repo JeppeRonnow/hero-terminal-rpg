@@ -12,6 +12,8 @@ class Enemy {
         
         void printStats() const;
 
+        void printName() const;
+
         bool isDead() const;
     
     private:
