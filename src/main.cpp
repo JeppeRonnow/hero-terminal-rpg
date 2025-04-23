@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../headers/Hero.hpp"
+#include "../headers/Enemy.hpp"
 
 int main() {
     
@@ -8,9 +9,12 @@ int main() {
     std::cout << "====================" << std::endl;
 
     // Create a hero
-    Hero hero("Jeppe", 0, 1, 10, 2);
+    Hero hero("Jeppe");
     hero.printStats();
 
+    // Create an enemy
+    Enemy Hest("Hest", 4, 1, 100);
+    Hest.printStats();
 
     return 0;
 }

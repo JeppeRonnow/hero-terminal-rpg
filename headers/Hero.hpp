@@ -1,3 +1,6 @@
+#ifndef HERO_HPP
+#define HERO_HPP
+
 #include <string>
 #include <iostream>
 
@@ -19,5 +22,6 @@ class Hero {
         int level;
         int hp;
         int strength;
-    };
-    
+};
+
+#endif
