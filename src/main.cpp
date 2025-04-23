@@ -1,7 +1,4 @@
-#include <iostream>
-
 #include "../headers/Game.hpp"
-#include <iostream>
 
 int main() {
     Game game;

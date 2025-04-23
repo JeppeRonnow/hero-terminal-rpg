@@ -15,6 +15,9 @@ Game::Game() {
 
 // run game
 void Game::run() {
+    std::cout << "     Crazy Terminal RPG\n";
+    std::cout << "=============================\n";
+
     while (isRunning) {
         if (!currentHero)
             mainMenu();
@@ -74,6 +77,7 @@ void Game::fightMenu() {
     int enemyIndex;
     std::cin >> enemyIndex;
 
+    // check if the enemy index is valid
     if (enemyIndex < 0 || enemyIndex >= enemies.size()) {
         std::cout << "Invalid enemy index. Try again.\n";
         return;
@@ -105,6 +109,7 @@ void Game::fightMenu() {
     }
 
 
+    // Check if hero is dead or enemy is dead
     if (enemy.isDead()) {
         currentHero->setHP(startHeroHP); // restore health
         std::cout << "You won!\n";
@@ -113,7 +118,7 @@ void Game::fightMenu() {
         currentHero->printStats();
     } else {
         std::cout << "You were defeated by " << enemy.getName() << "\n";
-        FileManager::deleteHero(currentHero->getName()); // delete hero
+        FileManager::deleteHero(currentHero->getName()); // delete hero if saved
 
         //delete current hero and go to main menu
         currentHero = nullptr;
@@ -123,6 +128,7 @@ void Game::fightMenu() {
     
 }
 
+// displays all enemies
 void Game::displayEnemies() const {
     for (size_t i = 0; i < enemies.size(); ++i) {
         std::cout << i << " : ";
@@ -131,11 +137,14 @@ void Game::displayEnemies() const {
     }
 }
 
+
+// saves current hero to file
 void Game::saveGame() {
     FileManager::saveHero(*currentHero);
     std::cout << "Game saved\n";
 }
 
+// loads hero from file
 void Game::loadGame() {
     std::string heroName;
 
