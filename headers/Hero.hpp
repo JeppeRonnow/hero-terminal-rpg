@@ -20,6 +20,8 @@ class Hero {
         int getStrength() const { return strength; }
         std::string getName() const { return name; }
         int getHP() const { return hp; }
+        int getXP() const { return xp; }
+        int getLevel() const { return level; }
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }

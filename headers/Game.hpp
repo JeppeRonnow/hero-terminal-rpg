@@ -3,9 +3,10 @@
 
 #include "Enemy.hpp"
 #include "Hero.hpp"
+#include "File_manager.hpp"
 
 #include <vector>
-#include <memory>
+#include <memory> // for std::unique_ptr
 
 class Game {
 public:

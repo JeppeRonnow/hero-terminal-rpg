@@ -110,13 +110,17 @@ void Game::fightMenu() {
         std::cout << "You won!\n";
         currentHero->gainXP(enemy.getXPReward()); // gain xp
         currentHero->levelUpIfReady(); // level up if ready
+        currentHero->printStats();
     } else {
         std::cout << "You were defeated by " << enemy.getName() << "\n";
+        FileManager::deleteHero(currentHero->getName()); // delete hero
+
+        //delete current hero and go to main menu
+        currentHero = nullptr;
     }
 
     enemy.setHP(startEnemyHP); // restore health
-
-    currentHero->printStats();
+    
 }
 
 void Game::displayEnemies() const {
@@ -128,11 +132,25 @@ void Game::displayEnemies() const {
 }
 
 void Game::saveGame() {
-    std::cout << "Saving game...\n";
-    // missing implementation
+    FileManager::saveHero(*currentHero);
+    std::cout << "Game saved\n";
 }
 
 void Game::loadGame() {
-    std::cout << "Loading game...\n";
-    // missing implementation
+    std::string heroName;
+
+    while (true) {
+        std::cout << "Write name to load: ";
+        std::cin >> heroName;
+
+        try {
+            currentHero = std::make_unique<Hero>(FileManager::loadHero(heroName));
+            std::cout << "Game loaded\n";
+            break;
+        } catch (const std::runtime_error& e) {
+            std::cout << e.what() << "\n";
+        }
+    }
+
+    currentHero->printStats();
 }
