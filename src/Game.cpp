@@ -5,6 +5,12 @@ Game::Game() {
     // Initialize enemies
     enemies.push_back(Enemy("Hest", 4, 1, 100));
     enemies.push_back(Enemy("Weak Goblin", 4, 2, 200));
+    enemies.push_back(Enemy("Strong Goblin", 8, 3, 400));
+    enemies.push_back(Enemy("Stronger Goblin", 10, 4, 500));
+    enemies.push_back(Enemy("The Strongest Goblin", 15, 5, 800));
+    enemies.push_back(Enemy("The Abe King", 30, 5, 1000));
+    enemies.push_back(Enemy("Unicorn", 5, 8, 1500));
+    enemies.push_back(Enemy("Dragon", 100, 10, 3000));
 }
 
 // run game
