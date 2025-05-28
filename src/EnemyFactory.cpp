@@ -13,7 +13,7 @@ Enemy EnemyFactory::generateEnemy(int heroLevel, const std::string& type) {
 
     int hp = calculateHP(adjective, baseHP);
     int strength = calculateStrength(adjective, baseStrength);
-    int xpReward = 100 + calculateXPReward(hp, strength);
+    int xpReward = 100 + calculateXPReward(hp, strength) * 2;
 
     return Enemy(name, hp, strength, xpReward);
 }
@@ -36,12 +36,13 @@ std::pair<int, int> EnemyFactory::getBaseStats(const std::string& type) {
 }
 
 std::string EnemyFactory::getRandomAdjective(int heroLevel) {
-    std:: vector<std::string> adjectives = {
+    std::vector<std::string> adjectives = {
         "Weak", "Frail", "Strong", "Stronger", "Elite"
     };
 
-    // Adjust the range based on hero level
-    int index = std::min(heroLevel, static_cast<int>(adjectives.size()) - 1);
+    // Scale hero level to fit within the range of adjectives
+    int scaledLevel = heroLevel / 2;
+    int index = std::min(scaledLevel, static_cast<int>(adjectives.size()) - 1);
 
     return adjectives[index];
 }

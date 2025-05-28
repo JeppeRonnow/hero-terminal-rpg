@@ -26,7 +26,7 @@ class Hero {
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }
-
+        void setGold(int newGold) { gold = newGold; }
         
     
     private:

@@ -58,6 +58,10 @@ void Game::createCaves() {
     std::cout << "Creating caves...\n";
 
     caves.push_back(caveFactory.createHorseCave(*currentHero));
+    caves.push_back(caveFactory.createGoblinCave(*currentHero));
+    caves.push_back(caveFactory.createMonkeyCave(*currentHero));
+    caves.push_back(caveFactory.createUnicornCave(*currentHero));
+    caves.push_back(caveFactory.createDragonCave(*currentHero));
 }
 
 // adventure menu
@@ -121,7 +125,7 @@ void Game::caveMenu(){
         // check if the enemy index is valid
         if (enemyIndex < 0 || enemyIndex >= cave.getEnemies().size()) {
             std::cout << "Invalid enemy index. Try again.\n";
-            return;
+            continue;
         }
 
         Enemy& enemy = cave.getEnemies()[enemyIndex];
@@ -156,7 +160,7 @@ void Game::caveMenu(){
             std::cout << "You won!\n";
             currentHero->gainXP(enemy.getXPReward());  // gain xp
             currentHero->levelUpIfReady();             // level up if ready
-            currentHero->printStats();
+            
 
             cave.clearEnemy(enemyIndex);  // clear enemy from cave
         } else {
@@ -165,10 +169,16 @@ void Game::caveMenu(){
 
             // delete current hero and go to main menu
             currentHero = nullptr;
+            return;  // exit cave menu if hero is dead
         }
 
         enemy.setHP(startEnemyHP);  // restore health
     }
+
+    // get gold reward for clearing the cave
+    std::cout << "You cleared the cave and received " << cave.getGoldReward() << " gold!\n";
+    currentHero->setGold(currentHero->getGold() + cave.getGoldReward());  // add gold to hero
+    currentHero->printStats();
 }
 
 // fight menu
