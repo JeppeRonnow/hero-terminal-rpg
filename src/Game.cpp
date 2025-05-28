@@ -54,6 +54,7 @@ void Game::mainMenu() {
 
 void Game::createCaves() {
     CaveFactory caveFactory;
+    caves.clear();  // Clear existing caves if you lose
 
     std::cout << "Creating caves...\n";
 
@@ -62,6 +63,26 @@ void Game::createCaves() {
     caves.push_back(caveFactory.createMonkeyCave(*currentHero));
     caves.push_back(caveFactory.createUnicornCave(*currentHero));
     caves.push_back(caveFactory.createDragonCave(*currentHero));
+}
+
+void Game::updateCaves(int caveIndex) {
+    std::string caveName = caves[caveIndex].getName();
+    std::cout << "Updating caves after clearing " << caveName << "\n";
+
+    caves.erase(caves.begin() + caveIndex);  // Remove cleared cave
+
+    // make new cave with same name at same index
+    if (caveName == "Horse Cave") {
+        caves.insert(caves.begin() + caveIndex, CaveFactory::createHorseCave(*currentHero));
+    } else if (caveName == "Goblin Cave") {
+        caves.insert(caves.begin() + caveIndex, CaveFactory::createGoblinCave(*currentHero));
+    } else if (caveName == "Monkey Cave") {
+        caves.insert(caves.begin() + caveIndex, CaveFactory::createMonkeyCave(*currentHero));
+    } else if (caveName == "Unicorn Cave") {
+        caves.insert(caves.begin() + caveIndex, CaveFactory::createUnicornCave(*currentHero));
+    } else if (caveName == "Dragon Cave") {
+        caves.insert(caves.begin() + caveIndex, CaveFactory::createDragonCave(*currentHero));
+    }
 }
 
 // adventure menu
@@ -161,7 +182,6 @@ void Game::caveMenu(){
             currentHero->gainXP(enemy.getXPReward());  // gain xp
             currentHero->levelUpIfReady();             // level up if ready
             
-
             cave.clearEnemy(enemyIndex);  // clear enemy from cave
         } else {
             std::cout << "You were defeated by " << enemy.getName() << "\n";
@@ -174,6 +194,8 @@ void Game::caveMenu(){
 
         enemy.setHP(startEnemyHP);  // restore health
     }
+
+    updateCaves(caveIndex);  // update caves
 
     // get gold reward for clearing the cave
     std::cout << "You cleared the cave and received " << cave.getGoldReward() << " gold!\n";

@@ -44,6 +44,7 @@ private:
 
     // caves
     void createCaves();
+    void updateCaves(int caveIndex);
 };
 
 #endif

@@ -13,7 +13,7 @@ Enemy EnemyFactory::generateEnemy(int heroLevel, const std::string& type) {
 
     int hp = calculateHP(adjective, baseHP);
     int strength = calculateStrength(adjective, baseStrength);
-    int xpReward = 100 + calculateXPReward(hp, strength) * 2;
+    int xpReward = 100 + calculateXPReward(hp, strength);
 
     return Enemy(name, hp, strength, xpReward);
 }
@@ -52,8 +52,8 @@ int EnemyFactory::calculateHP(const std::string& adjective, int baseHP) {
     static const std::map<std::string, int> hpMultipliers = {
         {"Weak", 1},
         {"Frail", 2},
-        {"Strong", 3},
-        {"Stronger", 5},
+        {"Strong", 4},
+        {"Stronger", 6},
         {"Elite", 10}
     };
 
@@ -69,8 +69,8 @@ int EnemyFactory::calculateStrength(const std::string& adjective, int baseStreng
     static const std::map<std::string, int> strengthMultipliers = {
         {"Weak", 1},
         {"Frail", 2},
-        {"Strong", 3},
-        {"Stronger", 5},
+        {"Strong", 4},
+        {"Stronger", 6},
         {"Elite", 10}
     };
 
