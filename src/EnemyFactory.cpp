@@ -3,22 +3,36 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <map>
 
-Enemy EnemyFactory::generateEnemy(int heroLevel) {
-    std::srand(std::time(nullptr)); // Seed the random number generator
-
+Enemy EnemyFactory::generateEnemy(int heroLevel, const std::string& type) {
     std::string adjective = getRandomAdjective(heroLevel);
-    std::string type = getRandomType(heroLevel);
     std::string name = adjective + " " + type;
 
-    int baseHP = 4; // Base HP
-    int baseStrength = 1; // Base strength
+    auto [baseHP, baseStrength] = getBaseStats(type);
 
     int hp = calculateHP(adjective, baseHP);
     int strength = calculateStrength(adjective, baseStrength);
     int xpReward = 100 + calculateXPReward(hp, strength);
 
     return Enemy(name, hp, strength, xpReward);
+}
+
+
+std::pair<int, int> EnemyFactory::getBaseStats(const std::string& type) {
+    static const std::map<std::string, std::pair<int, int>> baseStats = {
+        {"Goblin", {4, 2}},  // {Base HP, Base Strength}
+        {"Horse", {4, 1}},
+        {"Monkey", {30, 5}},
+        {"Unicorn", {5, 5}},
+        {"Dragon", {100, 10}}};
+
+    auto it = baseStats.find(type);
+    if (it != baseStats.end()) {
+        return it->second;
+    }
+
+    return {0, 0};  // Default case
 }
 
 std::string EnemyFactory::getRandomAdjective(int heroLevel) {
@@ -32,45 +46,39 @@ std::string EnemyFactory::getRandomAdjective(int heroLevel) {
     return adjectives[index];
 }
 
-std::string EnemyFactory::getRandomType(int heroLevel) {
-    std::vector<std::string> types = {
-        "Horse", "Goblin", "Monkey", "Unicorn", "Dragon"
-    };
-
-    // Adjust the range based on hero level
-    int index = std::min(heroLevel, static_cast<int>(types.size()) - 1);
-
-    return types[index];
-}
 
 int EnemyFactory::calculateHP(const std::string& adjective, int baseHP) {
-    if (adjective == "Weak") {
-        return baseHP;
-    } else if (adjective == "Frail") {
-        return baseHP + 3;
-    } else if (adjective == "Strong") {
-        return baseHP + 8;
-    } else if (adjective == "Stronger") {
-        return baseHP + 12;
-    } else if (adjective == "Elite") {
-        return baseHP + 25;
+    static const std::map<std::string, int> hpMultipliers = {
+        {"Weak", 1},
+        {"Frail", 2},
+        {"Strong", 3},
+        {"Stronger", 5},
+        {"Elite", 10}
+    };
+
+    auto it = hpMultipliers.find(adjective);
+    if (it != hpMultipliers.end()) {
+        return baseHP * it->second;
     }
-    return baseHP; // Default case
+
+    return baseHP; // Default case if adjective not found
 }
 
 int EnemyFactory::calculateStrength(const std::string& adjective, int baseStrength) {
-    if (adjective == "Weak") {
-        return baseStrength;
-    } else if (adjective == "Frail") {
-        return baseStrength + 1;
-    } else if (adjective == "Strong") {
-        return baseStrength + 2;
-    } else if (adjective == "Stronger") {
-        return baseStrength + 4;
-    } else if (adjective == "Elite") {
-        return baseStrength + 10;
+    static const std::map<std::string, int> strengthMultipliers = {
+        {"Weak", 1},
+        {"Frail", 2},
+        {"Strong", 3},
+        {"Stronger", 5},
+        {"Elite", 10}
+    };
+
+    auto it = strengthMultipliers.find(adjective);
+    if (it != strengthMultipliers.end()) {
+        return baseStrength * it->second;
     }
-    return baseStrength; // Default case
+
+    return baseStrength; // Default case if adjective not found
 }
 
 int EnemyFactory::calculateXPReward(int hp, int strength) {

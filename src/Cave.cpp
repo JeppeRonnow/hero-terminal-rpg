@@ -1,7 +1,7 @@
 #include "Cave.hpp"
 
-Cave::Cave(std::string name, int goldReward, std::vector<std::string> enemies)
-    : name(name), goldReward(goldReward), enemies(enemies) {}
+Cave::Cave(std::string name, int goldReward)
+    : name(name), goldReward(goldReward) {}
 
 Cave::~Cave() {}
 
@@ -17,6 +17,11 @@ void Cave::clearEnemy(int index) {
     }
 }
 
+// add an enemy to the cave
+void Cave::addEnemy(const Enemy& enemy) {
+    enemies.push_back(enemy);
+}
+
 std::string Cave::getName() {
     return name;
 }
@@ -25,6 +30,6 @@ int Cave::getGoldReward() {
     return goldReward;
 }
 
-std::vector<std::string> Cave::getEnemies() {
+std::vector<Enemy> Cave::getEnemies() {
     return enemies;
 }
