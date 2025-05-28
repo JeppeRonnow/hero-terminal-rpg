@@ -6,7 +6,11 @@
 #include "File_manager.hpp"
 #include "EnemyFactory.hpp"
 #include "Cave.hpp"
-#include "CaveFactory.hpp"
+#include "HorseCaveFactory.hpp"
+#include "DragonCaveFactory.hpp"
+#include "UnicornCaveFactory.hpp"
+#include "GoblinCaveFactory.hpp"
+#include "MonkeyCaveFactory.hpp"
 
 #include <vector>
 #include <memory> // for std::unique_ptr

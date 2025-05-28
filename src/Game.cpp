@@ -1,4 +1,4 @@
-#include "../headers/Game.hpp"
+#include "Game.hpp"
 
 // constructor
 Game::Game() {
@@ -53,16 +53,20 @@ void Game::mainMenu() {
 }
 
 void Game::createCaves() {
-    CaveFactory caveFactory;
     caves.clear();  // Clear existing caves if you lose
 
     std::cout << "Creating caves...\n";
 
-    caves.push_back(caveFactory.createHorseCave(*currentHero));
-    caves.push_back(caveFactory.createGoblinCave(*currentHero));
-    caves.push_back(caveFactory.createMonkeyCave(*currentHero));
-    caves.push_back(caveFactory.createUnicornCave(*currentHero));
-    caves.push_back(caveFactory.createDragonCave(*currentHero));
+    HorseCaveFactory HorseCaveFactory;
+    caves.push_back(HorseCaveFactory.createCave(*currentHero));
+    GoblinCaveFactory GoblinCaveFactory;
+    caves.push_back(GoblinCaveFactory.createCave(*currentHero));
+    MonkeyCaveFactory MonkeyCaveFactory;
+    caves.push_back(MonkeyCaveFactory.createCave(*currentHero));
+    UnicornCaveFactory UnicornCaveFactory;
+    caves.push_back(UnicornCaveFactory.createCave(*currentHero));
+    DragonCaveFactory DragonCaveFactory;
+    caves.push_back(DragonCaveFactory.createCave(*currentHero));
 }
 
 void Game::updateCaves(int caveIndex) {
@@ -71,17 +75,21 @@ void Game::updateCaves(int caveIndex) {
 
     caves.erase(caves.begin() + caveIndex);  // Remove cleared cave
 
-    // make new cave with same name at same index
     if (caveName == "Horse Cave") {
-        caves.insert(caves.begin() + caveIndex, CaveFactory::createHorseCave(*currentHero));
+        HorseCaveFactory HorseCaveFactory;
+        caves.insert(caves.begin() + caveIndex, HorseCaveFactory.createCave(*currentHero));
     } else if (caveName == "Goblin Cave") {
-        caves.insert(caves.begin() + caveIndex, CaveFactory::createGoblinCave(*currentHero));
+        GoblinCaveFactory GoblinCaveFactory;
+        caves.insert(caves.begin() + caveIndex, GoblinCaveFactory.createCave(*currentHero));
     } else if (caveName == "Monkey Cave") {
-        caves.insert(caves.begin() + caveIndex, CaveFactory::createMonkeyCave(*currentHero));
+        MonkeyCaveFactory MonkeyCaveFactory;
+        caves.insert(caves.begin() + caveIndex, MonkeyCaveFactory.createCave(*currentHero));
     } else if (caveName == "Unicorn Cave") {
-        caves.insert(caves.begin() + caveIndex, CaveFactory::createUnicornCave(*currentHero));
+        UnicornCaveFactory UnicornCaveFactory;
+        caves.insert(caves.begin() + caveIndex, UnicornCaveFactory.createCave(*currentHero));
     } else if (caveName == "Dragon Cave") {
-        caves.insert(caves.begin() + caveIndex, CaveFactory::createDragonCave(*currentHero));
+        DragonCaveFactory DragonCaveFactory;
+        caves.insert(caves.begin() + caveIndex, DragonCaveFactory.createCave(*currentHero));
     }
 }
 
