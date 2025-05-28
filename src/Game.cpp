@@ -51,6 +51,8 @@ void Game::mainMenu() {
 
 // adventure menu
 void Game::adventureMenu() {
+    enemies.push_back(EnemyFactory::generateEnemy(currentHero->getLevel()));
+
     std::cout << "Your options are (0) Fight monster (4) save and exit: ";
     int choice;
     std::cin >> choice;

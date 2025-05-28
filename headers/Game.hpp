@@ -4,6 +4,7 @@
 #include "Enemy.hpp"
 #include "Hero.hpp"
 #include "File_manager.hpp"
+#include "EnemyFactory.hpp"
 
 #include <vector>
 #include <memory> // for std::unique_ptr
