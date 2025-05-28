@@ -1,13 +1,13 @@
 #include "../headers/Hero.hpp"
 
 // constructor
-Hero::Hero(std::string name, int xp, int level, int hp, int strength)
-    : name(name), xp(xp), level(level), hp(hp), strength(strength) {}
+Hero::Hero(std::string name, int xp, int level, int hp, int strength, int gold)
+    : name(name), xp(xp), level(level), hp(hp), strength(strength), gold(gold) {}
 
 
 // prints stats of the hero
 void Hero::printStats() const {
-    std::cout << name << " with " << hp << " hp " << level << " level " << xp << " xp\n";
+    std::cout << name << " with " << hp << " hp " << level << " level " << gold << " gold " << xp << " xp\n";
 }
 
 // is the hero dead?

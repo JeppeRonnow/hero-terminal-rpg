@@ -6,7 +6,7 @@
 
 class Hero {
     public:
-        Hero(std::string name, int xp = 0, int level = 1, int hp = 10, int strength = 2);
+        Hero(std::string name, int xp = 0, int level = 1, int hp = 10, int strength = 2, int gold = 0);
         
         void receiveDamage(int dmg);
         void gainXP(int amount);
@@ -22,6 +22,7 @@ class Hero {
         int getHP() const { return hp; }
         int getXP() const { return xp; }
         int getLevel() const { return level; }
+        int getGold() const { return gold; }
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }
@@ -34,6 +35,7 @@ class Hero {
         int level;
         int hp;
         int strength;
+        int gold;
 };
 
 #endif

@@ -42,7 +42,8 @@ void FileManager::saveHero(const Hero& hero) {
             // Update the existing hero's data
             line = hero.getName() + "," + std::to_string(hero.getXP()) + "," +
                    std::to_string(hero.getLevel()) + "," + std::to_string(hero.getHP()) + "," +
-                   std::to_string(hero.getStrength());
+                   std::to_string(hero.getStrength()) + "," +
+                   std::to_string(hero.getGold());
         }
         lines.push_back(line);
         currentIndex++;
@@ -53,7 +54,7 @@ void FileManager::saveHero(const Hero& hero) {
     if (lineIndex == -1) {
         lines.push_back(hero.getName() + "," + std::to_string(hero.getXP()) + "," +
                         std::to_string(hero.getLevel()) + "," + std::to_string(hero.getHP()) + "," +
-                        std::to_string(hero.getStrength()));
+                        std::to_string(hero.getStrength()) + "," + std::to_string(hero.getGold()));
     }
 
     // Write all lines back to the file
@@ -87,6 +88,7 @@ Hero FileManager::loadHero(const std::string& name) {
             size_t pos2 = line.find(',', pos1 + 1);
             size_t pos3 = line.find(',', pos2 + 1);
             size_t pos4 = line.find(',', pos3 + 1);
+            size_t pos5 = line.find(',', pos4 + 1);
 
             // make and return the hero
             return Hero(
@@ -94,7 +96,8 @@ Hero FileManager::loadHero(const std::string& name) {
                 std::stoi(line.substr(pos1 + 1, pos2 - pos1 - 1)),
                 std::stoi(line.substr(pos2 + 1, pos3 - pos2 - 1)),
                 std::stoi(line.substr(pos3 + 1, pos4 - pos3 - 1)),
-                std::stoi(line.substr(pos4 + 1))
+                std::stoi(line.substr(pos4 + 1, pos5 - pos4 - 1)),
+                std::stoi(line.substr(pos5 + 1))                   
             );
         }
         currentIndex++; // next line
