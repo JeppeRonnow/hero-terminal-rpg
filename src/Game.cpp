@@ -47,19 +47,31 @@ void Game::mainMenu() {
             std::cout << "Invalid choice. Try again.\n";
             break;
     }
+
+    // create caves
+    createCaves();
+}
+
+void Game::createCaves() {
+    CaveFactory caveFactory;
+
+    std::cout << "Creating caves...\n";
+
+    caves.push_back(caveFactory.createHorseCave(*currentHero));
 }
 
 // adventure menu
 void Game::adventureMenu() {
-    enemies.push_back(EnemyFactory::generateEnemy(currentHero->getLevel()));
-
-    std::cout << "Your options are (0) Fight monster (4) save and exit: ";
+    std::cout << "Your options are (0) Fight monster (1) Fight Caves (4) save and exit: ";
     int choice;
     std::cin >> choice;
 
     switch (choice) {
         case 0:
             fightMenu();
+            break;
+        case 1:
+            caveMenu();
             break;
         case 4:
             saveGame();
@@ -68,6 +80,94 @@ void Game::adventureMenu() {
         default:
             std::cout << "Invalid choice. Try again.\n";
             break;
+    }
+}
+
+// cave menu
+void Game::caveMenu(){
+    displayCaves();
+    std::cout << "Select cave by index (-1 to exit): ";
+
+    int caveIndex;
+    std::cin >> caveIndex;
+    
+    // Exit the cave menu if the user enters -1
+    if (caveIndex == -1) {
+        return;
+    }
+
+    // check if the cave index is valid
+    if (caveIndex < 0 || caveIndex >= caves.size()) {
+        std::cout << "Invalid cave index. Try again.\n";
+        return;
+    }
+
+    Cave& cave = caves[caveIndex];
+    std::cout << "You entered " << cave.getName() << "\n";
+    if (cave.isCleaned()) {
+        std::cout << "This cave is already cleaned.\n";
+        return;
+    }
+
+    std::cout << "You found " << cave.getEnemies().size() << " enemies in this cave.\n";
+
+    while (!cave.isCleaned())    {
+        cave.displayCaveInfo();
+        std::cout << "Select enemy by index to fight: ";
+        int enemyIndex;
+        std::cin >> enemyIndex;
+        enemyIndex -= 1;
+
+        // check if the enemy index is valid
+        if (enemyIndex < 0 || enemyIndex >= cave.getEnemies().size()) {
+            std::cout << "Invalid enemy index. Try again.\n";
+            return;
+        }
+
+        Enemy& enemy = cave.getEnemies()[enemyIndex];
+
+        std::cout << "You are fighting " << enemy.getName() << "\n";
+
+        // save start health
+        int startHeroHP = currentHero->getHP();
+        int startEnemyHP = enemy.getHP();
+
+        while (!enemy.isDead() && !currentHero->isDead()) {
+            enemy.printStats();
+            currentHero->printStats();
+            std::cout << "Press enter to fight";
+            std::cin.ignore();
+            std::cin.get();
+
+            // Hero attacks enemy
+            enemy.receiveDamage(currentHero->getStrength());
+
+            // Enemy attacks hero
+            if (!enemy.isDead()) {
+                currentHero->receiveDamage(enemy.getStrength());
+            } else {
+                std::cout << enemy.getName() << " is defeated\n";
+            }
+        }
+
+        // Check if hero is dead or enemy is dead
+        if (enemy.isDead()) {
+            currentHero->setHP(startHeroHP);  // restore health
+            std::cout << "You won!\n";
+            currentHero->gainXP(enemy.getXPReward());  // gain xp
+            currentHero->levelUpIfReady();             // level up if ready
+            currentHero->printStats();
+
+            cave.clearEnemy(enemyIndex);  // clear enemy from cave
+        } else {
+            std::cout << "You were defeated by " << enemy.getName() << "\n";
+            FileManager::deleteHero(currentHero->getName());  // delete hero if saved
+
+            // delete current hero and go to main menu
+            currentHero = nullptr;
+        }
+
+        enemy.setHP(startEnemyHP);  // restore health
     }
 }
 
@@ -139,6 +239,11 @@ void Game::displayEnemies() const {
     }
 }
 
+void Game::displayCaves() const {
+    for (size_t i = 0; i < caves.size(); ++i) {
+        std::cout << i << " : " << caves[i].getName() << "\n";
+    }
+}
 
 // saves current hero to file
 void Game::saveGame() {

@@ -19,9 +19,12 @@ public:
     void addEnemy(const Enemy& enemy);
 
     // Getters
-    std::string getName();
+    std::string getName() const;
     int getGoldReward();
-    std::vector<Enemy> getEnemies();
+    std::vector<Enemy>& getEnemies();
+
+    // display cave information
+    void displayCaveInfo() const;
 
 private:
     std::string name;

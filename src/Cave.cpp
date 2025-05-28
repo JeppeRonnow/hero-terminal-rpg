@@ -17,12 +17,22 @@ void Cave::clearEnemy(int index) {
     }
 }
 
+void Cave::displayCaveInfo() const {
+    std::cout << "Cave Name: " << name << "\n";
+    std::cout << "Gold Reward: " << goldReward << "\n";
+    std::cout << "Enemies in the cave:\n";
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        std::cout << i + 1 << ". ";
+        enemies[i].printStats();
+    }
+}
+
 // add an enemy to the cave
 void Cave::addEnemy(const Enemy& enemy) {
     enemies.push_back(enemy);
 }
 
-std::string Cave::getName() {
+std::string Cave::getName() const {
     return name;
 }
 
@@ -30,6 +40,6 @@ int Cave::getGoldReward() {
     return goldReward;
 }
 
-std::vector<Enemy> Cave::getEnemies() {
+std::vector<Enemy>& Cave::getEnemies() {
     return enemies;
 }
