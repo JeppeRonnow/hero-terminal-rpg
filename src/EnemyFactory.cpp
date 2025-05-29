@@ -53,9 +53,9 @@ int EnemyFactory::calculateHP(const std::string& adjective, int baseHP) {
     static const std::map<std::string, int> hpMultipliers = {
         {"Weak", 1},
         {"Frail", 2},
-        {"Strong", 4},
-        {"Stronger", 6},
-        {"Elite", 10}
+        {"Strong", 3},
+        {"Stronger", 4},
+        {"Elite", 5}
     };
 
     auto it = hpMultipliers.find(adjective);
@@ -71,9 +71,9 @@ int EnemyFactory::calculateStrength(const std::string& adjective, int baseStreng
     static const std::map<std::string, int> strengthMultipliers = {
         {"Weak", 1},
         {"Frail", 2},
-        {"Strong", 4},
-        {"Stronger", 6},
-        {"Elite", 10}
+        {"Strong", 3},
+        {"Stronger", 4},
+        {"Elite", 5}
     };
 
     auto it = strengthMultipliers.find(adjective);
