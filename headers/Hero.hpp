@@ -20,8 +20,9 @@ class Hero {
         bool isDead() const;
 
         void equipWeapon(const Weapon& weapon);
-
-        void addWaponToInventory(const Weapon& weapon);
+        void unequipWeapon();
+        
+        void addWeaponToInventory(const Weapon& weapon);
 
         // getter functions
         int getStrength() const { return strength; }
@@ -30,8 +31,8 @@ class Hero {
         int getXP() const { return xp; }
         int getLevel() const { return level; }
         int getGold() const { return gold; }
-        Weapon getWeapon() const { return equippedWeapon; }
-        const std::vector<Weapon>& getInventory() { return inventory; }
+        Weapon* getWeapon() const { return equippedWeapon; } // Return pointer to equipped weapon
+        const std::vector<Weapon>& getInventory() const { return inventory; } // Mark as const
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }
@@ -47,7 +48,7 @@ class Hero {
         int gold;
 
         std::vector<Weapon> inventory;
-        Weapon equippedWeapon;
+        Weapon* equippedWeapon = nullptr; // Pointer to a weapon in the inventory
 };
 
 #endif

@@ -46,6 +46,8 @@ private:
     std::vector<Cave> caves;
     std::vector<Weapon> weapons;
 
+    // fighting
+    void updateWeapon();
 
     // game state
     bool isRunning = true;

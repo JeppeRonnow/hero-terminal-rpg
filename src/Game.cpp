@@ -13,9 +13,9 @@ Game::Game() {
     enemies.push_back(Enemy("Dragon", 100, 10, 3000));
 
     // Initialize possible weapons
-    weapons.push_back(Weapon("Knife", 5, 0, 20));
-    weapons.push_back(Weapon("Stick", 0, 1, 10));
+    weapons.push_back(Weapon("Stick", 0, 1, 7));
     weapons.push_back(Weapon("Metal Pipe", 0, 2, 20));
+    weapons.push_back(Weapon("Knife", 5, 0, 20));
     weapons.push_back(Weapon("Sword", 20, 1, 30));
     weapons.push_back(Weapon("Morning Star", 10, 3, 40));
 }
@@ -154,8 +154,9 @@ void Game::caveMenu(){
 
     std::cout << "You found " << cave.getEnemies().size() << " enemies in this cave.\n";
 
+    cave.displayCaveInfo();
+
     while (!cave.isCleaned())    {
-        cave.displayCaveInfo();
         std::cout << "Select enemy by index to fight: ";
         int enemyIndex;
         std::cin >> enemyIndex;
@@ -184,6 +185,7 @@ void Game::caveMenu(){
 
             // Hero attacks enemy
             enemy.receiveDamage(currentHero->getStrength());
+            updateWeapon();  // degrade weapon durability
 
             // Enemy attacks hero
             if (!enemy.isDead()) {
@@ -309,7 +311,7 @@ void Game::weaponMenu(){
 
     // Equip the selected weapon
     currentHero->equipWeapon(inventory[choice - 1]);
-    std::cout << "You equipped: " << currentHero->getWeapon().getName() << "\n";
+    std::cout << "You equipped: " << currentHero->getWeapon()->getName() << "\n";
 }
 
 void Game::caveReward(int caveIndex, int goldReward) {
@@ -322,9 +324,24 @@ void Game::caveReward(int caveIndex, int goldReward) {
     std::cout << "remember to equip it in your inventory\n";
 
     // add weapon to hero's inventory
-    currentHero->addWaponToInventory(weapons[caveIndex]);
+    currentHero->addWeaponToInventory(weapons[caveIndex]);
 
     currentHero->printStats();
+}
+
+void Game::updateWeapon() {
+    // Check if a weapon is equipped
+    Weapon* equippedWeapon = currentHero->getWeapon();
+    if (equippedWeapon) {
+        // Degrade weapon durability
+        equippedWeapon->degrade();
+
+        // Update weapon if it is broken
+        if (equippedWeapon->isBroken()) {
+            std::cout << "Your weapon is broken and cannot be used.\n";
+            currentHero->unequipWeapon(); // Unequip broken weapon
+        }
+    }
 }
 
 // displays all enemies

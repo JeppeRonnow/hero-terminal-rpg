@@ -4,7 +4,6 @@
 Hero::Hero(std::string name, int xp, int level, int hp, int strength, int gold)
     : name(name), xp(xp), level(level), hp(hp), strength(strength), gold(gold) {}
 
-
 // prints stats of the hero
 void Hero::printStats() const {
     std::cout << name << " with " << hp << " hp, " << level << " level, " << gold << " gold, " << xp << " xp\n";
@@ -38,15 +37,29 @@ void Hero::levelUpIfReady() {
     }
 }
 
+// equip a weapon from the inventory
 void Hero::equipWeapon(const Weapon& weapon) {
-    if (!weapon.isBroken()) {
-        equippedWeapon = weapon;
-        strength += weapon.calculateDamage(strength);
+    for (auto& invWeapon : inventory) {
+        if (&invWeapon == &weapon && !weapon.isBroken()) { // Ensure weapon is in inventory and not broken
+            equippedWeapon = &invWeapon; // Point to the weapon in the inventory
+            strength += invWeapon.calculateDamage(strength);
+            return;
+        }
+    }
+    std::cout << "Weapon is either not in inventory or is broken.\n";
+}
+
+// unequip the currently equipped weapon
+void Hero::unequipWeapon() {
+    if (equippedWeapon) { // Check if a weapon is equipped
+        strength -= equippedWeapon->calculateDamage(strength); // Adjust strength accordingly
+        equippedWeapon = nullptr; // Reset the pointer
     } else {
-        std::cout << "Weapon is broken and cannot be equipped.\n";
+        std::cout << "No weapon is currently equipped.\n";
     }
 }
 
-void Hero::addWaponToInventory(const Weapon& weapon) {
+// add a weapon to the inventory
+void Hero::addWeaponToInventory(const Weapon& weapon) {
     inventory.push_back(weapon);
 }
