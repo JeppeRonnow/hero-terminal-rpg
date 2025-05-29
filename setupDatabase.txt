@@ -46,7 +46,7 @@ CREATE TABLE Kills (
 );
 
 INSERT OR IGNORE INTO Weapons (name, damage, multiplier, durability) VALUES
-('Stick', 0, 1, 7),
+('Stick', 0, 1, 10),
 ('Metal Pipe', 0, 2, 20),
 ('Knife', 5, 0, 20),
 ('Sword', 20, 1, 30),

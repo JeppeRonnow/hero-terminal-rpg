@@ -28,8 +28,8 @@ public:
 
     // analytics
     void listHeroes() const;
-    void monsterKillCount(const std::string& heroName) const;
-    void monsterKillCountByWeapon(const std::string& heroName, const Weapon& weapon) const;
+    void monsterKillCount() const;
+    void monsterKillCountByWeapon(const std::string& heroName) const;
     void topHeroesByKills() const;
 
 private:

@@ -13,7 +13,7 @@ Game::Game() {
     enemies.push_back(Enemy("Dragon", 100, 10, 3000));
 
     // Initialize possible weapons
-    weapons.push_back(Weapon("Stick", 0, 1, 7));
+    weapons.push_back(Weapon("Stick", 0, 1, 10));
     weapons.push_back(Weapon("Metal Pipe", 0, 2, 20));
     weapons.push_back(Weapon("Knife", 5, 0, 20));
     weapons.push_back(Weapon("Sword", 20, 1, 30));
@@ -424,12 +424,15 @@ void Game::dataMenu() {
             break;
         case 1:
             // How many monsters evry hero has killed
+            db.monsterKillCount();
             break;
         case 2:
             // Current hero's weapon kill count
+            db.monsterKillCountByWeapon(currentHero->getName());
             break;
         case 3:
             // Top heroes for each weapon
+            db.topHeroesByKills();
             break;
         case -1:
             // Exit data menu

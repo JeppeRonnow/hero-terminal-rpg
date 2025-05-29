@@ -358,3 +358,120 @@ void DatabaseManager::listHeroes() const {
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 }
+
+// show how many monsters each hero has killed
+void DatabaseManager::monsterKillCount() const {
+    sqlite3* db;
+    if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    const char* sql = R"(
+        SELECT h.name, COUNT(k.id) AS kill_count
+        FROM Heroes h
+        LEFT JOIN Kills k ON h.id = k.heroId
+        GROUP BY h.id
+        ORDER BY kill_count DESC;
+    )";
+
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            int killCount = sqlite3_column_int(stmt, 1);
+            std::cout << name << ": " << killCount << " kills\n";
+        }
+        std::cout << "\n";
+    } else {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+}
+
+// show how many monsters a hero has killed with all wepons types
+void DatabaseManager::monsterKillCountByWeapon(const std::string& heroName) const {
+    sqlite3* db;
+    if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
+        std::cerr << "Failed to open DB: " << sqlite3_errmsg(db) << "\n";
+        return;
+    }
+
+    const char* sql = R"(
+        SELECT
+            COALESCE(w.name, 'Bare Hands') AS weaponName,
+            COUNT(*) AS kills
+        FROM Kills k
+        JOIN Heroes h ON h.id = k.heroId
+        LEFT JOIN Weapons w ON w.id = k.weaponId
+        WHERE h.name = ?
+        GROUP BY weaponName;
+    )";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, heroName.c_str(), -1, SQLITE_TRANSIENT);
+
+        std::cout << "Kill count for hero '" << heroName << "' by weapon:\n";
+
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            std::string weaponName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            int kills = sqlite3_column_int(stmt, 1);
+            std::cout << "    " << weaponName << ": " << kills << " kills\n";
+        }
+
+        std::cout << "\n";
+    } else {
+        std::cerr << "SQL error: " << sqlite3_errmsg(db) << "\n";
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+}
+
+// show top heroes for each weapon
+void DatabaseManager::topHeroesByKills() const {
+    sqlite3* db;
+    if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    const char* sql = R"(
+        SELECT w.name AS weaponName,
+               h.name AS heroName,
+               MAX(kill_count) AS topKills
+        FROM (
+            SELECT k.weaponId, k.heroId, COUNT(*) AS kill_count
+            FROM Kills k
+            WHERE k.weaponId IS NOT NULL
+            GROUP BY k.weaponId, k.heroId
+        ) AS sub
+        JOIN Weapons w ON sub.weaponId = w.id
+        JOIN Heroes h ON sub.heroId = h.id
+        GROUP BY sub.weaponId
+        ORDER BY topKills DESC;
+    )";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        std::cout << "Top heroes per weapon:\n";
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            std::string weaponName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            std::string heroName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+            int kills = sqlite3_column_int(stmt, 2);
+
+            std::cout << weaponName << " -> " << heroName << " (" << kills << " kills)\n";
+        }
+        std::cout << "\n";
+    } else {
+        std::cerr << "SQL error: " << sqlite3_errmsg(db) << "\n";
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+}
