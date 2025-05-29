@@ -126,6 +126,44 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
     }
     sqlite3_finalize(heroStmt);
 
+    // If hero does not exist, assign a custom ID and insert them into the database
+    if (heroId == -1) {
+        std::cerr << "Hero '" << heroName << "' not found in database. Adding hero...\n";
+
+        // Find the maximum existing ID
+        std::string getMaxIdSQL = "SELECT MAX(id) FROM Heroes;";
+        sqlite3_stmt* maxIdStmt;
+        int maxId = 0;
+        if (sqlite3_prepare_v2(db, getMaxIdSQL.c_str(), -1, &maxIdStmt, nullptr) == SQLITE_OK) {
+            if (sqlite3_step(maxIdStmt) == SQLITE_ROW) {
+                maxId = sqlite3_column_int(maxIdStmt, 0);
+            }
+        }
+        sqlite3_finalize(maxIdStmt);
+
+        heroId = maxId + 1; // Assign the next ID
+
+        std::string insertHeroSQL = R"(
+            INSERT INTO Heroes (id, name, hp, strength, level, xp, gold)
+            VALUES (?, ?, 100, 10, 1, 0, 0);
+        )";
+        sqlite3_stmt* insertHeroStmt;
+        if (sqlite3_prepare_v2(db, insertHeroSQL.c_str(), -1, &insertHeroStmt, nullptr) == SQLITE_OK) {
+            sqlite3_bind_int(insertHeroStmt, 1, heroId);
+            sqlite3_bind_text(insertHeroStmt, 2, heroName.c_str(), -1, SQLITE_TRANSIENT);
+            if (sqlite3_step(insertHeroStmt) == SQLITE_DONE) {
+                std::cout << "Hero '" << heroName << "' added to database with ID: " << heroId << "\n";
+            }
+        }
+        sqlite3_finalize(insertHeroStmt);
+
+        if (heroId == -1) {
+            std::cerr << "Failed to add hero to database.\n";
+            sqlite3_close(db);
+            return;
+        }
+    }
+
     // Only try to get weaponId if a weapon name was given
     if (!weaponName.empty()) {
         std::string getWeaponIdSQL = "SELECT id FROM Weapons WHERE name = ?;";
@@ -137,27 +175,27 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
             }
         }
         sqlite3_finalize(weaponStmt);
+
+        if (weaponId == -1) {
+            std::cerr << "Weapon '" << weaponName << "' not found in database.\n";
+        }
     }
 
     // Log kill
-    if (heroId != -1) {
-        std::string insertKillSQL = "INSERT INTO Kills (heroId, weaponId) VALUES (?, ?);";
-        sqlite3_stmt* insertStmt;
-        if (sqlite3_prepare_v2(db, insertKillSQL.c_str(), -1, &insertStmt, nullptr) == SQLITE_OK) {
-            sqlite3_bind_int(insertStmt, 1, heroId);
-            if (weaponId != -1)
-                sqlite3_bind_int(insertStmt, 2, weaponId);
-            else
-                sqlite3_bind_null(insertStmt, 2);
+    std::string insertKillSQL = "INSERT INTO Kills (heroId, weaponId) VALUES (?, ?);";
+    sqlite3_stmt* insertStmt;
+    if (sqlite3_prepare_v2(db, insertKillSQL.c_str(), -1, &insertStmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_int(insertStmt, 1, heroId);
+        if (weaponId != -1)
+            sqlite3_bind_int(insertStmt, 2, weaponId);
+        else
+            sqlite3_bind_null(insertStmt, 2);
 
-            if (sqlite3_step(insertStmt) != SQLITE_DONE) {
-                std::cerr << "Error logging kill: " << sqlite3_errmsg(db) << std::endl;
-            }
+        if (sqlite3_step(insertStmt) != SQLITE_DONE) {
+            std::cerr << "Error logging kill: " << sqlite3_errmsg(db) << std::endl;
         }
-        sqlite3_finalize(insertStmt);
-    } else {
-        std::cerr << "Hero not found in database.\n";
     }
+    sqlite3_finalize(insertStmt);
 
     sqlite3_close(db);
 }
