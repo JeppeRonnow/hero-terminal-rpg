@@ -46,6 +46,7 @@ void Game::mainMenu() {
             std::cin >> heroName;
 
             currentHero = std::make_unique<Hero>(heroName);
+            saveGame();  // Save new hero to database
             break;
         case 1:
             loadGame();
@@ -102,7 +103,7 @@ void Game::updateCaves(int caveIndex) {
 
 // adventure menu
 void Game::adventureMenu() {
-    std::cout << "Your options are (0) Fight monster, (1) Fight Caves, (2) Weapon Inventory (4) save and exit: ";
+    std::cout << "Your options are (0) Fight monster, (1) Fight Caves, (2) Weapon Inventory, (3) Analytics, (4) save and exit: ";
     int choice;
     std::cin >> choice;
 
@@ -115,6 +116,9 @@ void Game::adventureMenu() {
             break;
         case 2:
             weaponMenu();
+            break;
+        case 3:
+            dataMenu();
             break;
         case 4:
             saveGame();
@@ -397,4 +401,41 @@ void Game::loadGame() {
     }
 
     currentHero->printStats();
+}
+
+void Game::dataMenu() {
+    DatabaseManager db(DATABASE_PATH);
+
+    std::cout << "\nData Menu:\n";
+    std::cout << "(0) List Heroes\n";
+    std::cout << "(1) Monster Kill Count for Each Hero\n";
+    std::cout << "(2) Current Hero's Weapon Kill Count\n";
+    std::cout << "(3) Top Heroes for Each Weapon\n";
+    std::cout << "(-1) Exit Data Menu:  ";
+
+    int choice;
+    std::cin >> choice;
+    std::cout << "\n";
+
+    switch (choice) {
+        case 0:
+            // hero lists
+            db.listHeroes();
+            break;
+        case 1:
+            // How many monsters evry hero has killed
+            break;
+        case 2:
+            // Current hero's weapon kill count
+            break;
+        case 3:
+            // Top heroes for each weapon
+            break;
+        case -1:
+            // Exit data menu
+            return;
+        default:
+            std::cout << "Invalid choice. Try again.\n";
+            break;
+    }
 }

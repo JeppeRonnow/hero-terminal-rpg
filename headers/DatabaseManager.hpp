@@ -18,7 +18,6 @@ public:
 
     // save
     void saveHero(const Hero& hero);
-    void addWeaponToHero(const std::string& heroName, const Weapon& weapon);
     void logKill(const std::string& heroName, const std::string& weaponName);
     void saveHeroInventory(const Hero& hero);
 

@@ -32,6 +32,7 @@ private:
     void fightMenu();          // choose enemy and fight
     void caveMenu();           // choose cave and fight
     void weaponMenu();        // choose weapon and equip
+    void dataMenu();          // show hero data and analytics
 
     // load functions
     void saveGame();           // save hero to file
