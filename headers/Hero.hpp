@@ -26,6 +26,7 @@ class Hero {
 
         // getter functions
         int getStrength() const { return strength; }
+        int getFullStrength() const;
         std::string getName() const { return name; }
         int getHP() const { return hp; }
         int getXP() const { return xp; }
@@ -46,6 +47,7 @@ class Hero {
         int hp;
         int strength;
         int gold;
+        int weaponStrength;  // Strength with equipped weapon
 
         std::vector<Weapon> inventory;
         Weapon* equippedWeapon = nullptr; // Pointer to a weapon in the inventory

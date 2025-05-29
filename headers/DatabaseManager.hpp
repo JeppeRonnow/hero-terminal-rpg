@@ -20,10 +20,12 @@ public:
     void saveHero(const Hero& hero);
     void addWeaponToHero(const std::string& heroName, const Weapon& weapon);
     void logKill(const std::string& heroName, const std::string& weaponName);
+    void saveHeroInventory(const Hero& hero);
 
     // load
     Hero loadHero(const std::string& heroName) const;
     std::vector<Weapon> loadHeroWeapons(const std::string& heroName) const;
+    void loadHeroInventory(Hero& hero) const;
 
     // analytics
     void listHeroes() const;
@@ -32,6 +34,5 @@ public:
     void topHeroesByKills() const;
 
 private:
-    std::string databaseFilePath; // Path to the database file
-
+    std::string databaseFilePath;  // Path to the database file
 };

@@ -22,6 +22,10 @@ void Hero::receiveDamage(int dmg) {
     }
 }
 
+int Hero::getFullStrength() const {
+    return strength + weaponStrength;  // Add weapon damage
+}
+
 // gain xp
 void Hero::gainXP(int amount) {
     xp += amount;
@@ -42,7 +46,7 @@ void Hero::equipWeapon(const Weapon& weapon) {
     for (auto& invWeapon : inventory) {
         if (&invWeapon == &weapon && !weapon.isBroken()) { // Ensure weapon is in inventory and not broken
             equippedWeapon = &invWeapon; // Point to the weapon in the inventory
-            strength += invWeapon.calculateDamage(strength);
+            weaponStrength = invWeapon.calculateDamage(strength); // Calculate weapon strength
             return;
         }
     }
@@ -52,7 +56,7 @@ void Hero::equipWeapon(const Weapon& weapon) {
 // unequip the currently equipped weapon
 void Hero::unequipWeapon() {
     if (equippedWeapon) { // Check if a weapon is equipped
-        strength -= equippedWeapon->calculateDamage(strength); // Adjust strength accordingly
+        weaponStrength = 0; // Reset weaponStrength to 0
         equippedWeapon = nullptr; // Reset the pointer
     } else {
         std::cout << "No weapon is currently equipped.\n";

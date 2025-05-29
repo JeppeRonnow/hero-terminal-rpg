@@ -29,8 +29,9 @@ CREATE TABLE Weapons (
 CREATE TABLE HeroWeapons (
     heroId INTEGER NOT NULL,
     weaponId INTEGER NOT NULL,
+    instanceId INTEGER NOT NULL,
     durabilityLeft INTEGER NOT NULL,
-    PRIMARY KEY (heroId, weaponId),
+    PRIMARY KEY (heroId, weaponId, instanceId),
     FOREIGN KEY (heroId) REFERENCES Heroes(id),
     FOREIGN KEY (weaponId) REFERENCES Weapons(id)
 );
@@ -43,3 +44,10 @@ CREATE TABLE Kills (
     FOREIGN KEY (heroId) REFERENCES Heroes(id),
     FOREIGN KEY (weaponId) REFERENCES Weapons(id)
 );
+
+INSERT OR IGNORE INTO Weapons (name, damage, multiplier, durability) VALUES
+('Stick', 0, 1, 7),
+('Metal Pipe', 0, 2, 20),
+('Knife', 5, 0, 20),
+('Sword', 20, 1, 30),
+('Morning Star', 10, 3, 40);

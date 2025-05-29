@@ -185,7 +185,7 @@ void Game::caveMenu(){
             std::cin.get();
 
             // Hero attacks enemy
-            enemy.receiveDamage(currentHero->getStrength());
+            enemy.receiveDamage(currentHero->getFullStrength());
             updateWeapon();  // degrade weapon durability
 
             // Enemy attacks hero
@@ -373,6 +373,7 @@ void Game::saveGame() {
     // save to database
     DatabaseManager db(DATABASE_PATH);
     db.saveHero(*currentHero);
+    db.saveHeroInventory(*currentHero);
     std::cout << "Hero saved to database\n";
 }
 
@@ -388,6 +389,7 @@ void Game::loadGame() {
             DatabaseManager db(DATABASE_PATH);
             currentHero = std::make_unique<Hero>(db.loadHero(heroName));
             std::cout << "Loaded hero: " << currentHero->getName() << "\n";
+            db.loadHeroInventory(*currentHero);
             break;
         } catch (const std::exception& e) {
             std::cerr << "Fejl: " << e.what() << "\n";
