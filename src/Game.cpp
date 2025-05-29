@@ -238,12 +238,12 @@ void Game::caveMenu(){
 // fight menu
 void Game::fightMenu() {
     displayEnemies();
-    std::cout << "select enemy by index: ";
+    std::cout << "Select enemy by index: ";
 
     int enemyIndex;
     std::cin >> enemyIndex;
 
-    // check if the enemy index is valid
+    // Check if the enemy index is valid
     if (enemyIndex < 0 || enemyIndex >= enemies.size()) {
         std::cout << "Invalid enemy index. Try again.\n";
         return;
@@ -251,7 +251,7 @@ void Game::fightMenu() {
 
     Enemy& enemy = enemies[enemyIndex];
 
-    // save start health
+    // Save start health
     int startHeroHP = currentHero->getHP();
     int startEnemyHP = enemy.getHP();
 
@@ -261,37 +261,44 @@ void Game::fightMenu() {
         std::cout << "Press enter to fight";
         std::cin.ignore();
         std::cin.get();
-        
+
         // Hero attacks enemy
-        enemy.receiveDamage(currentHero->getStrength());
+        enemy.receiveDamage(currentHero->getFullStrength());
+        updateWeapon(); // Degrade weapon durability
 
         // Enemy attacks hero
         if (!enemy.isDead()) {
             currentHero->receiveDamage(enemy.getStrength());
-        }
-        else {
+        } else {
             std::cout << enemy.getName() << " is defeated\n";
         }
     }
 
-
     // Check if hero is dead or enemy is dead
     if (enemy.isDead()) {
-        currentHero->setHP(startHeroHP); // restore health
+        currentHero->setHP(startHeroHP); // Restore health
         std::cout << "You won!\n";
-        currentHero->gainXP(enemy.getXPReward()); // gain xp
-        currentHero->levelUpIfReady(); // level up if ready
+        currentHero->gainXP(enemy.getXPReward()); // Gain XP
+        currentHero->levelUpIfReady(); // Level up if ready
+
+        DatabaseManager db(DATABASE_PATH);
+
+        std::string weaponName = "";
+        if (currentHero->getWeapon() != nullptr) {
+            weaponName = currentHero->getWeapon()->getName();
+        }
+        db.logKill(currentHero->getName(), weaponName); // Log kill
+
         currentHero->printStats();
     } else {
         std::cout << "You were defeated by " << enemy.getName() << "\n";
-        FileManager::deleteHero(currentHero->getName()); // delete hero if saved
+        FileManager::deleteHero(currentHero->getName()); // Delete hero if saved
 
-        //delete current hero and go to main menu
+        // Delete current hero and go to main menu
         currentHero = nullptr;
     }
 
-    enemy.setHP(startEnemyHP); // restore health
-    
+    enemy.setHP(startEnemyHP); // Restore health
 }
 
 void Game::weaponMenu(){
@@ -378,7 +385,6 @@ void Game::saveGame() {
     DatabaseManager db(DATABASE_PATH);
     db.saveHero(*currentHero);
     db.saveHeroInventory(*currentHero);
-    std::cout << "Hero saved to database\n";
 }
 
 // loads hero from file
