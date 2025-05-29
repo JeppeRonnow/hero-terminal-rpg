@@ -1,5 +1,6 @@
 #include "Weapon.hpp"
 
+Weapon::Weapon() {};
 
 Weapon::Weapon(const std::string& name, int baseDamage, int strengthModifier, int durability)
     : name(name), baseDamage(baseDamage), strengthModifier(strengthModifier), durability(durability) {}

@@ -11,6 +11,13 @@ Game::Game() {
     enemies.push_back(Enemy("The Abe King", 30, 5, 1000));
     enemies.push_back(Enemy("Unicorn", 5, 8, 1500));
     enemies.push_back(Enemy("Dragon", 100, 10, 3000));
+
+    // Initialize possible weapons
+    weapons.push_back(Weapon("Knife", 5, 0, 20));
+    weapons.push_back(Weapon("Stick", 0, 1, 10));
+    weapons.push_back(Weapon("Metal Pipe", 0, 2, 20));
+    weapons.push_back(Weapon("Sword", 20, 1, 30));
+    weapons.push_back(Weapon("Morning Star", 10, 3, 40));
 }
 
 // run game
@@ -95,7 +102,7 @@ void Game::updateCaves(int caveIndex) {
 
 // adventure menu
 void Game::adventureMenu() {
-    std::cout << "Your options are (0) Fight monster (1) Fight Caves (4) save and exit: ";
+    std::cout << "Your options are (0) Fight monster, (1) Fight Caves, (2) Weapon Inventory (4) save and exit: ";
     int choice;
     std::cin >> choice;
 
@@ -105,6 +112,9 @@ void Game::adventureMenu() {
             break;
         case 1:
             caveMenu();
+            break;
+        case 2:
+            weaponMenu();
             break;
         case 4:
             saveGame();
@@ -205,10 +215,9 @@ void Game::caveMenu(){
 
     updateCaves(caveIndex);  // update caves
 
-    // get gold reward for clearing the cave
-    std::cout << "You cleared the cave and received " << cave.getGoldReward() << " gold!\n";
-    currentHero->setGold(currentHero->getGold() + cave.getGoldReward());  // add gold to hero
-    currentHero->printStats();
+    caveReward(caveIndex, cave.getGoldReward());  // give reward for clearing the cave
+
+    
 }
 
 // fight menu
@@ -268,6 +277,54 @@ void Game::fightMenu() {
 
     enemy.setHP(startEnemyHP); // restore health
     
+}
+
+void Game::weaponMenu(){
+    // if hero has no weapons in inventory
+    if (currentHero->getInventory().empty()) {
+        std::cout << "You have no weapons in your inventory.\n";
+        return;
+    }
+
+    std::cout << "Your inventory:\n";
+
+    const auto& inventory = currentHero->getInventory();
+    for (size_t i = 0; i < inventory.size(); ++i) {
+        std::cout << i + 1 << ": " << inventory[i].getName() << " (Durability: " << inventory[i].getDurability() << ")\n";
+    }
+
+    std::cout << "Select weapon to equip by index (-1 to exit): ";
+    int choice;
+    std::cin >> choice;
+
+    if (choice == -1) {
+        return; // Exit weapon menu
+    }
+
+    // Check if the choice is valid
+    if (choice < 1 || choice > static_cast<int>(inventory.size())) {
+        std::cout << "Invalid choice. Try again.\n";
+        return;
+    }
+
+    // Equip the selected weapon
+    currentHero->equipWeapon(inventory[choice - 1]);
+    std::cout << "You equipped: " << currentHero->getWeapon().getName() << "\n";
+}
+
+void Game::caveReward(int caveIndex, int goldReward) {
+    // get gold reward for clearing the cave
+    std::cout << "You cleared the cave and received " << goldReward << " gold!\n";
+    currentHero->setGold(currentHero->getGold() + goldReward);  // add gold to hero
+
+    // get weapon (based on index)
+    std::cout << "You found a " << weapons[caveIndex].getName() << " in the cave!\n";
+    std::cout << "remember to equip it in your inventory\n";
+
+    // add weapon to hero's inventory
+    currentHero->addWaponToInventory(weapons[caveIndex]);
+
+    currentHero->printStats();
 }
 
 // displays all enemies

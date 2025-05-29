@@ -11,6 +11,7 @@
 #include "UnicornCaveFactory.hpp"
 #include "GoblinCaveFactory.hpp"
 #include "MonkeyCaveFactory.hpp"
+#include "Weapon.hpp"
 
 #include <vector>
 #include <memory> // for std::unique_ptr
@@ -29,6 +30,7 @@ private:
     void adventureMenu();      // fight or save
     void fightMenu();          // choose enemy and fight
     void caveMenu();           // choose cave and fight
+    void weaponMenu();        // choose weapon and equip
 
     // load functions
     void saveGame();           // save hero to file
@@ -42,6 +44,8 @@ private:
     std::unique_ptr<Hero> currentHero;
     std::vector<Enemy> enemies;
     std::vector<Cave> caves;
+    std::vector<Weapon> weapons;
+
 
     // game state
     bool isRunning = true;
@@ -49,6 +53,8 @@ private:
     // caves
     void createCaves();
     void updateCaves(int caveIndex);
+
+    void caveReward(int caveIndex, int goldReward);
 };
 
 #endif

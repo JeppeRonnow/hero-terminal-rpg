@@ -3,6 +3,9 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+
+#include "Weapon.hpp"
 
 class Hero {
     public:
@@ -16,6 +19,10 @@ class Hero {
 
         bool isDead() const;
 
+        void equipWeapon(const Weapon& weapon);
+
+        void addWaponToInventory(const Weapon& weapon);
+
         // getter functions
         int getStrength() const { return strength; }
         std::string getName() const { return name; }
@@ -23,6 +30,8 @@ class Hero {
         int getXP() const { return xp; }
         int getLevel() const { return level; }
         int getGold() const { return gold; }
+        Weapon getWeapon() const { return equippedWeapon; }
+        const std::vector<Weapon>& getInventory() { return inventory; }
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }
@@ -36,6 +45,9 @@ class Hero {
         int hp;
         int strength;
         int gold;
+
+        std::vector<Weapon> inventory;
+        Weapon equippedWeapon;
 };
 
 #endif

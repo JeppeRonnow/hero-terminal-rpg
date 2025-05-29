@@ -38,5 +38,15 @@ void Hero::levelUpIfReady() {
     }
 }
 
+void Hero::equipWeapon(const Weapon& weapon) {
+    if (!weapon.isBroken()) {
+        equippedWeapon = weapon;
+        strength += weapon.calculateDamage(strength);
+    } else {
+        std::cout << "Weapon is broken and cannot be equipped.\n";
+    }
+}
 
-
+void Hero::addWaponToInventory(const Weapon& weapon) {
+    inventory.push_back(weapon);
+}
