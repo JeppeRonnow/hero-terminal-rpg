@@ -65,6 +65,7 @@ void Game::createCaves() {
 
     std::cout << "Creating caves...\n";
 
+    // Create caves with factories
     HorseCaveFactory HorseCaveFactory;
     caves.push_back(HorseCaveFactory.createCave(*currentHero));
     GoblinCaveFactory GoblinCaveFactory;
@@ -77,6 +78,7 @@ void Game::createCaves() {
     caves.push_back(DragonCaveFactory.createCave(*currentHero));
 }
 
+// updates caves after clearing
 void Game::updateCaves(int caveIndex) {
     std::string caveName = caves[caveIndex].getName();
     std::cout << "Updating caves after clearing " << caveName << "\n";
@@ -159,7 +161,7 @@ void Game::caveMenu(){
     std::cout << "You found " << cave.getEnemies().size() << " enemies in this cave.\n";
 
     
-
+    // inside cave loop
     while (!cave.isCleaned())    {
         cave.displayCaveInfo();
         std::cout << "Select enemy by index to fight: ";
@@ -173,7 +175,7 @@ void Game::caveMenu(){
             continue;
         }
 
-        Enemy& enemy = cave.getEnemies()[enemyIndex];
+        Enemy& enemy = cave.getEnemies()[enemyIndex]; // Get the selected enemy
 
         std::cout << "You are fighting " << enemy.getName() << "\n";
 
@@ -213,12 +215,12 @@ void Game::caveMenu(){
             if (currentHero->getWeapon() != nullptr) {
                 weaponName = currentHero->getWeapon()->getName();
             }
-            db.logKill(currentHero->getName(), weaponName);
+            db.logKill(currentHero->getName(), weaponName); // log kill
 
             cave.clearEnemy(enemyIndex);  // clear enemy from cave
         } else {
             std::cout << "You were defeated by " << enemy.getName() << "\n";
-            FileManager::deleteHero(currentHero->getName());  // delete hero if saved
+            saveGame();  // save game before deleting hero
 
             // delete current hero and go to main menu
             currentHero = nullptr;
@@ -231,8 +233,6 @@ void Game::caveMenu(){
     updateCaves(caveIndex);  // update caves
 
     caveReward(caveIndex, cave.getGoldReward());  // give reward for clearing the cave
-
-    
 }
 
 // fight menu
@@ -292,8 +292,8 @@ void Game::fightMenu() {
         currentHero->printStats();
     } else {
         std::cout << "You were defeated by " << enemy.getName() << "\n";
-        FileManager::deleteHero(currentHero->getName()); // Delete hero if saved
-
+        saveGame(); // Save game before deleting hero
+        
         // Delete current hero and go to main menu
         currentHero = nullptr;
     }
@@ -301,6 +301,7 @@ void Game::fightMenu() {
     enemy.setHP(startEnemyHP); // Restore health
 }
 
+// weapon menu shows all weapons in inventory and allows to equip one
 void Game::weaponMenu(){
     // if hero has no weapons in inventory
     if (currentHero->getInventory().empty()) {
@@ -349,6 +350,7 @@ void Game::caveReward(int caveIndex, int goldReward) {
     currentHero->printStats();
 }
 
+// updates weapon durability and checks if it is broken
 void Game::updateWeapon() {
     // Check if a weapon is equipped
     Weapon* equippedWeapon = currentHero->getWeapon();
@@ -373,6 +375,7 @@ void Game::displayEnemies() const {
     }
 }
 
+// displays all caves
 void Game::displayCaves() const {
     for (size_t i = 0; i < caves.size(); ++i) {
         std::cout << i << " : " << caves[i].getName() << "\n";
@@ -409,6 +412,7 @@ void Game::loadGame() {
     currentHero->printStats();
 }
 
+// displays data menu showing hero data
 void Game::dataMenu() {
     DatabaseManager db(DATABASE_PATH);
 

@@ -1,12 +1,11 @@
 #include "DatabaseManager.hpp"
 
-
-DatabaseManager::DatabaseManager(std::string databaseFilePath){
+// Constructor to initialize the database file path
+DatabaseManager::DatabaseManager(std::string databaseFilePath) {
     this->databaseFilePath = databaseFilePath;
-
 }
 
-
+// Function to save a hero's data into the database
 void DatabaseManager::saveHero(const Hero& hero) {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -14,7 +13,7 @@ void DatabaseManager::saveHero(const Hero& hero) {
         return;
     }
 
-    // Step 1: INSERT if hero doesn't exist
+    // Insert hero data if the hero doesn't already exist
     const char* insertSQL = R"(
         INSERT OR IGNORE INTO Heroes (name, hp, strength, level, xp, gold)
         VALUES (?, ?, ?, ?, ?, ?);
@@ -22,6 +21,7 @@ void DatabaseManager::saveHero(const Hero& hero) {
 
     sqlite3_stmt* insertStmt;
     if (sqlite3_prepare_v2(db, insertSQL, -1, &insertStmt, nullptr) == SQLITE_OK) {
+        // Bind hero attributes to the SQL statement
         sqlite3_bind_text(insertStmt, 1, hero.getName().c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(insertStmt, 2, hero.getHP());
         sqlite3_bind_int(insertStmt, 3, hero.getStrength());
@@ -35,7 +35,7 @@ void DatabaseManager::saveHero(const Hero& hero) {
         std::cerr << "Error preparing INSERT statement: " << sqlite3_errmsg(db) << std::endl;
     }
 
-    // Step 2: UPDATE stats for that hero
+    // Update hero data if the hero already exists
     const char* updateSQL = R"(
         UPDATE Heroes
         SET hp = ?, strength = ?, level = ?, xp = ?, gold = ?
@@ -44,6 +44,7 @@ void DatabaseManager::saveHero(const Hero& hero) {
 
     sqlite3_stmt* updateStmt;
     if (sqlite3_prepare_v2(db, updateSQL, -1, &updateStmt, nullptr) == SQLITE_OK) {
+        // Bind updated hero attributes to the SQL statement
         sqlite3_bind_int(updateStmt, 1, hero.getHP());
         sqlite3_bind_int(updateStmt, 2, hero.getStrength());
         sqlite3_bind_int(updateStmt, 3, hero.getLevel());
@@ -60,6 +61,7 @@ void DatabaseManager::saveHero(const Hero& hero) {
     sqlite3_close(db);
 }
 
+// Function to load a hero's data from the database
 Hero DatabaseManager::loadHero(const std::string& heroName) const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -80,11 +82,13 @@ Hero DatabaseManager::loadHero(const std::string& heroName) const {
         throw std::runtime_error("Failed to prepare SQL");
     }
 
+    // Bind the hero name to the SQL statement
     sqlite3_bind_text(stmt, 1, heroName.c_str(), -1, SQLITE_TRANSIENT);
 
-    Hero hero("", 0, 0, 0, 0, 0);  // fallback default
+    Hero hero("", 0, 0, 0, 0, 0);  // Default hero object
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Extract hero attributes from the database
         int hp = sqlite3_column_int(stmt, 0);
         int strength = sqlite3_column_int(stmt, 1);
         int level = sqlite3_column_int(stmt, 2);
@@ -92,7 +96,6 @@ Hero DatabaseManager::loadHero(const std::string& heroName) const {
         int gold = sqlite3_column_int(stmt, 4);
 
         hero = Hero(heroName, xp, level, hp, strength, gold);
-
     } else {
         sqlite3_finalize(stmt);
         sqlite3_close(db);
@@ -105,6 +108,7 @@ Hero DatabaseManager::loadHero(const std::string& heroName) const {
     return hero;
 }
 
+// Function to log a kill for a hero, optionally with a weapon
 void DatabaseManager::logKill(const std::string& heroName, const std::string& weaponName) {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -115,7 +119,7 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
     int heroId = -1;
     int weaponId = -1;
 
-    // Get heroId
+    // Retrieve the hero's ID from the database
     std::string getHeroIdSQL = "SELECT id FROM Heroes WHERE name = ?;";
     sqlite3_stmt* heroStmt;
     if (sqlite3_prepare_v2(db, getHeroIdSQL.c_str(), -1, &heroStmt, nullptr) == SQLITE_OK) {
@@ -126,11 +130,11 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
     }
     sqlite3_finalize(heroStmt);
 
-    // If hero does not exist, assign a custom ID and insert them into the database
+    // If the hero doesn't exist, add them to the database
     if (heroId == -1) {
         std::cerr << "Hero '" << heroName << "' not found in database. Adding hero...\n";
 
-        // Find the maximum existing ID
+        // Find the maximum existing ID and assign the next ID
         std::string getMaxIdSQL = "SELECT MAX(id) FROM Heroes;";
         sqlite3_stmt* maxIdStmt;
         int maxId = 0;
@@ -141,8 +145,9 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
         }
         sqlite3_finalize(maxIdStmt);
 
-        heroId = maxId + 1; // Assign the next ID
+        heroId = maxId + 1;
 
+        // Insert the new hero into the database
         std::string insertHeroSQL = R"(
             INSERT INTO Heroes (id, name, hp, strength, level, xp, gold)
             VALUES (?, ?, 100, 10, 1, 0, 0);
@@ -164,7 +169,7 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
         }
     }
 
-    // Only try to get weaponId if a weapon name was given
+    // Retrieve the weapon's ID if a weapon name is provided
     if (!weaponName.empty()) {
         std::string getWeaponIdSQL = "SELECT id FROM Weapons WHERE name = ?;";
         sqlite3_stmt* weaponStmt;
@@ -181,7 +186,7 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
         }
     }
 
-    // Log kill
+    // Log the kill in the database
     std::string insertKillSQL = "INSERT INTO Kills (heroId, weaponId) VALUES (?, ?);";
     sqlite3_stmt* insertStmt;
     if (sqlite3_prepare_v2(db, insertKillSQL.c_str(), -1, &insertStmt, nullptr) == SQLITE_OK) {
@@ -200,6 +205,7 @@ void DatabaseManager::logKill(const std::string& heroName, const std::string& we
     sqlite3_close(db);
 }
 
+// Function to save a hero's inventory into the database
 void DatabaseManager::saveHeroInventory(const Hero& hero) {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -207,7 +213,7 @@ void DatabaseManager::saveHeroInventory(const Hero& hero) {
         return;
     }
 
-    // Step 1: find heroId
+    // Retrieve the hero's ID from the database
     int heroId = -1;
     {
         std::string sql = "SELECT id FROM Heroes WHERE name = ?;";
@@ -227,7 +233,7 @@ void DatabaseManager::saveHeroInventory(const Hero& hero) {
         return;
     }
 
-    // Step 2: Prepare the INSERT statement once
+    // Prepare the SQL statement for inserting inventory items
     std::string insertSQL = R"(
         INSERT INTO HeroWeapons (heroId, weaponId, instanceId, durabilityLeft)
         VALUES (?, ?, ?, ?);
@@ -239,10 +245,10 @@ void DatabaseManager::saveHeroInventory(const Hero& hero) {
         return;
     }
 
-    // Step 3: Iterate over the inventory and save each weapon
-    int instanceId = 1; // Start instanceId at 1 for each hero
+    // Iterate over the heros inventory and save each weapon
+    int instanceId = 1;
     for (const Weapon& w : hero.getInventory()) {
-        // find weaponId
+        // Retrieve the weapons ID from the database
         int weaponId = -1;
         {
             std::string sql = "SELECT id FROM Weapons WHERE name = ?;";
@@ -280,6 +286,7 @@ void DatabaseManager::saveHeroInventory(const Hero& hero) {
     sqlite3_close(db);
 }
 
+// Function to load a hero's inventory from the database
 void DatabaseManager::loadHeroInventory(Hero& hero) const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -287,7 +294,7 @@ void DatabaseManager::loadHeroInventory(Hero& hero) const {
         return;
     }
 
-    // Get heroId
+    // Retrieve the hero's ID from the database
     int heroId = -1;
     {
         std::string sql = "SELECT id FROM Heroes WHERE name = ?;";
@@ -307,7 +314,7 @@ void DatabaseManager::loadHeroInventory(Hero& hero) const {
         return;
     }
 
-    // Load weapons from HeroWeapons
+    // Load weapons from the HeroWeapons table
     std::string sql = R"(
         SELECT w.name, w.damage, w.multiplier, hw.durabilityLeft
         FROM HeroWeapons hw
@@ -320,6 +327,7 @@ void DatabaseManager::loadHeroInventory(Hero& hero) const {
         sqlite3_bind_int(stmt, 1, heroId);
 
         while (sqlite3_step(stmt) == SQLITE_ROW) {
+            // Extract weapon attributes from the database
             std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
             int damage = sqlite3_column_int(stmt, 1);
             int multiplier = sqlite3_column_int(stmt, 2);
@@ -333,8 +341,7 @@ void DatabaseManager::loadHeroInventory(Hero& hero) const {
     sqlite3_close(db);
 }
 
-
-// list heroes in the terminal with alphabetical order
+// Function to list all heroes in alphabetical order
 void DatabaseManager::listHeroes() const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -342,10 +349,12 @@ void DatabaseManager::listHeroes() const {
         return;
     }
 
-    const char* sql = "SELECT name FROM Heroes ORDER BY name COLLATE NOCASE ASC;"; // Case-insensitive sorting
+    // SQL query to fetch hero names sorted alphabetically (case-insensitive)
+    const char* sql = "SELECT name FROM Heroes ORDER BY name COLLATE NOCASE ASC;";
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        // Iterate through the results and print each hero name
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
             std::cout << name << "\n";
@@ -359,7 +368,7 @@ void DatabaseManager::listHeroes() const {
     sqlite3_close(db);
 }
 
-// show how many monsters each hero has killed
+// Function to show the number of monsters each hero has killed
 void DatabaseManager::monsterKillCount() const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -367,6 +376,7 @@ void DatabaseManager::monsterKillCount() const {
         return;
     }
 
+    // SQL query to count kills grouped by hero, sorted by kill count in descending order
     const char* sql = R"(
         SELECT h.name, COUNT(k.id) AS kill_count
         FROM Heroes h
@@ -378,6 +388,7 @@ void DatabaseManager::monsterKillCount() const {
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        // Iterate through the results and print hero names with their kill counts
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
             int killCount = sqlite3_column_int(stmt, 1);
@@ -390,10 +401,9 @@ void DatabaseManager::monsterKillCount() const {
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
-
 }
 
-// show how many monsters a hero has killed with all wepons types
+// Function to show the number of monsters a hero has killed with each weapon type
 void DatabaseManager::monsterKillCountByWeapon(const std::string& heroName) const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -401,6 +411,7 @@ void DatabaseManager::monsterKillCountByWeapon(const std::string& heroName) cons
         return;
     }
 
+    // SQL query to count kills grouped by weapon type for a specific hero
     const char* sql = R"(
         SELECT
             COALESCE(w.name, 'Bare Hands') AS weaponName,
@@ -416,6 +427,7 @@ void DatabaseManager::monsterKillCountByWeapon(const std::string& heroName) cons
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_text(stmt, 1, heroName.c_str(), -1, SQLITE_TRANSIENT);
 
+        // Print kill counts grouped by weapon type
         std::cout << "Kill count for hero '" << heroName << "' by weapon:\n";
 
         while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -433,7 +445,7 @@ void DatabaseManager::monsterKillCountByWeapon(const std::string& heroName) cons
     sqlite3_close(db);
 }
 
-// show top heroes for each weapon
+// Function to show the top heroes for each weapon based on kill count
 void DatabaseManager::topHeroesByKills() const {
     sqlite3* db;
     if (sqlite3_open(databaseFilePath.c_str(), &db) != SQLITE_OK) {
@@ -441,6 +453,7 @@ void DatabaseManager::topHeroesByKills() const {
         return;
     }
 
+    // SQL query to find the hero with the most kills for each weapon
     const char* sql = R"(
         SELECT w.name AS weaponName,
                h.name AS heroName,
@@ -459,6 +472,7 @@ void DatabaseManager::topHeroesByKills() const {
 
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        // Print the top hero for each weapon
         std::cout << "Top heroes per weapon:\n";
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             std::string weaponName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));

@@ -12,11 +12,11 @@ public:
     ~Cave();
     Cave(std::string name, int goldReward);
 
-    bool isCleaned() const;
+    bool isCleaned() const; // Check if the cave is completely cleaned
 
-    void clearEnemy(int index);
+    void clearEnemy(int index); // Clear an enemy at a specific index
 
-    void addEnemy(const Enemy& enemy);
+    void addEnemy(const Enemy& enemy); // Add an enemy to the cave
 
     // Getters
     std::string getName() const;

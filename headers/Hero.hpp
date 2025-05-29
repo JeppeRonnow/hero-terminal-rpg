@@ -11,18 +11,18 @@ class Hero {
     public:
         Hero(std::string name, int xp = 0, int level = 1, int hp = 10, int strength = 2, int gold = 0);
         
-        void receiveDamage(int dmg);
-        void gainXP(int amount);
-        void levelUpIfReady();
+        void receiveDamage(int dmg); // Reduce HP by damage amount
+        void gainXP(int amount); // Gain experience points
+        void levelUpIfReady(); // Check if the hero is ready to level up and do so if possible
     
-        void printStats() const;
+        void printStats() const; // Print hero stats
 
-        bool isDead() const;
+        bool isDead() const; // Check if the hero is dead
 
-        void equipWeapon(const Weapon& weapon);
-        void unequipWeapon();
+        void equipWeapon(const Weapon& weapon); // Equip a weapon from the inventory
+        void unequipWeapon(); // Remove the equipped weapon
         
-        void addWeaponToInventory(const Weapon& weapon);
+        void addWeaponToInventory(const Weapon& weapon); // Add a weapon to the inventory
 
         // getter functions
         int getStrength() const { return strength; }
@@ -33,7 +33,7 @@ class Hero {
         int getLevel() const { return level; }
         int getGold() const { return gold; }
         Weapon* getWeapon() const { return equippedWeapon; } // Return pointer to equipped weapon
-        const std::vector<Weapon>& getInventory() const { return inventory; } // Mark as const
+        const std::vector<Weapon>& getInventory() const { return inventory; }
 
         //setter functions
         void setHP(int newHP) { hp = newHP; }
@@ -47,7 +47,7 @@ class Hero {
         int hp;
         int strength;
         int gold;
-        int weaponStrength;  // Strength with equipped weapon
+        int weaponStrength;  // Strength of equipped weapon
 
         std::vector<Weapon> inventory;
         Weapon* equippedWeapon = nullptr; // Pointer to a weapon in the inventory

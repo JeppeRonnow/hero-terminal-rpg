@@ -1,9 +1,12 @@
+/*
+    This file defines the Game class, which manages the game state, menus, and interactions.
+*/
+
 #ifndef GAME_HPP
 #define GAME_HPP
 
 #include "Enemy.hpp"
 #include "Hero.hpp"
-#include "File_manager.hpp"
 #include "EnemyFactory.hpp"
 #include "Cave.hpp"
 #include "HorseCaveFactory.hpp"

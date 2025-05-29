@@ -21,7 +21,7 @@ void Cave::displayCaveInfo() const {
     std::cout << "Cave Name: " << name << "\n";
     std::cout << "Gold Reward: " << goldReward << "\n";
     std::cout << "Enemies in the cave:\n";
-    for (size_t i = 0; i < enemies.size(); ++i) {
+    for (size_t i = 0; i < enemies.size(); ++i) { // Loop through each enemy
         std::cout << i + 1 << ". ";
         enemies[i].printStats();
     }
