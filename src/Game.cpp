@@ -154,9 +154,10 @@ void Game::caveMenu(){
 
     std::cout << "You found " << cave.getEnemies().size() << " enemies in this cave.\n";
 
-    cave.displayCaveInfo();
+    
 
     while (!cave.isCleaned())    {
+        cave.displayCaveInfo();
         std::cout << "Select enemy by index to fight: ";
         int enemyIndex;
         std::cin >> enemyIndex;
@@ -201,7 +202,15 @@ void Game::caveMenu(){
             std::cout << "You won!\n";
             currentHero->gainXP(enemy.getXPReward());  // gain xp
             currentHero->levelUpIfReady();             // level up if ready
-            
+
+            DatabaseManager db(DATABASE_PATH);
+
+            std::string weaponName = "";
+            if (currentHero->getWeapon() != nullptr) {
+                weaponName = currentHero->getWeapon()->getName();
+            }
+            db.logKill(currentHero->getName(), weaponName);
+
             cave.clearEnemy(enemyIndex);  // clear enemy from cave
         } else {
             std::cout << "You were defeated by " << enemy.getName() << "\n";
@@ -361,8 +370,10 @@ void Game::displayCaves() const {
 
 // saves current hero to file
 void Game::saveGame() {
-    FileManager::saveHero(*currentHero);
-    std::cout << "Game saved\n";
+    // save to database
+    DatabaseManager db(DATABASE_PATH);
+    db.saveHero(*currentHero);
+    std::cout << "Hero saved to database\n";
 }
 
 // loads hero from file
@@ -374,11 +385,12 @@ void Game::loadGame() {
         std::cin >> heroName;
 
         try {
-            currentHero = std::make_unique<Hero>(FileManager::loadHero(heroName));
-            std::cout << "Game loaded\n";
+            DatabaseManager db(DATABASE_PATH);
+            currentHero = std::make_unique<Hero>(db.loadHero(heroName));
+            std::cout << "Loaded hero: " << currentHero->getName() << "\n";
             break;
-        } catch (const std::runtime_error& e) {
-            std::cout << e.what() << "\n";
+        } catch (const std::exception& e) {
+            std::cerr << "Fejl: " << e.what() << "\n";
         }
     }
 

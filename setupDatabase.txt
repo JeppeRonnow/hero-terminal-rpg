@@ -1,0 +1,45 @@
+-- database_setup.txt
+
+DROP TABLE IF EXISTS Heroes;
+DROP TABLE IF EXISTS Weapons;
+DROP TABLE IF EXISTS HeroWeapons;
+DROP TABLE IF EXISTS Kills;
+
+-- Helte
+CREATE TABLE Heroes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    hp INTEGER NOT NULL,
+    strength INTEGER NOT NULL,
+    level INTEGER NOT NULL,
+    xp INTEGER NOT NULL,
+    gold INTEGER NOT NULL
+);
+
+-- Våben-definitioner (skabeloner)
+CREATE TABLE Weapons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    damage INTEGER NOT NULL,
+    multiplier INTEGER NOT NULL,
+    durability INTEGER NOT NULL
+);
+
+-- Heltenes våben-inventar (many-to-many)
+CREATE TABLE HeroWeapons (
+    heroId INTEGER NOT NULL,
+    weaponId INTEGER NOT NULL,
+    durabilityLeft INTEGER NOT NULL,
+    PRIMARY KEY (heroId, weaponId),
+    FOREIGN KEY (heroId) REFERENCES Heroes(id),
+    FOREIGN KEY (weaponId) REFERENCES Weapons(id)
+);
+
+-- Kampdata
+CREATE TABLE Kills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    heroId INTEGER NOT NULL,
+    weaponId INTEGER,
+    FOREIGN KEY (heroId) REFERENCES Heroes(id),
+    FOREIGN KEY (weaponId) REFERENCES Weapons(id)
+);

@@ -12,6 +12,7 @@
 #include "GoblinCaveFactory.hpp"
 #include "MonkeyCaveFactory.hpp"
 #include "Weapon.hpp"
+#include "DatabaseManager.hpp"
 
 #include <vector>
 #include <memory> // for std::unique_ptr
