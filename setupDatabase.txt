@@ -1,11 +1,8 @@
--- database_setup.txt
-
 DROP TABLE IF EXISTS Heroes;
 DROP TABLE IF EXISTS Weapons;
 DROP TABLE IF EXISTS HeroWeapons;
 DROP TABLE IF EXISTS Kills;
 
--- Helte
 CREATE TABLE Heroes (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
@@ -16,7 +13,6 @@ CREATE TABLE Heroes (
     gold INTEGER NOT NULL
 );
 
--- Våben-definitioner (skabeloner)
 CREATE TABLE Weapons (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
@@ -36,7 +32,6 @@ CREATE TABLE HeroWeapons (
     FOREIGN KEY (weaponId) REFERENCES Weapons(id)
 );
 
--- Kampdata
 CREATE TABLE Kills (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     heroId INTEGER NOT NULL,
